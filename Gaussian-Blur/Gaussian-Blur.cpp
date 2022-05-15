@@ -120,6 +120,7 @@ void printCompilerError(cl_program program, cl_device_id device) {
 	}
 
 	status = clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, logSize, log, NULL);
+    checkStatus(status);
 
 	printf("Build Error: %s\n", log);
 }
