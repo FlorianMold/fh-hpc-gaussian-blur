@@ -203,14 +203,13 @@ int neededWorkItemDimensions = 2;
 int main() {
 
 	// Generate kernel
-	float sigma = 100.0f;
-	int32_t radius = 3;
+	float sigma = 10.0f;
+	int32_t radius = 9;
 	int32_t diameter = radius * 2 + 1;
 	float* gaussKernel = generateKernel(radius, sigma);
 	int32_t imageLayers = 3;
 
-	// TODO: Maybe replace with input parameter
-	string imageName = "C:/Users/user/Pictures/desert.bmp";
+	string imageName = "images/xl.bmp";
 	const char* cImageName = imageName.c_str();
 	img* bmp = new img[IMAGE_SIZE];
 	unsigned char* imgData = openImg(cImageName, bmp);
@@ -363,7 +362,6 @@ int main() {
 	// release allocated resources
 	free(gaussKernel);
 	free(imgData);
-	free(outputImage);
 
 
 	// release opencl objects

@@ -16,10 +16,13 @@ __kernel void gaussian_blur(__global unsigned char *inputImage,
   int imageLayers = 3;
 
   if (column == 0 && row == 0) {
+    printf("\n");
+    printf("Kernel information:");
     printf("width: %d", width);
     printf("height: %d", height);
     printf("kernelDiameter: %d", diameter);
     printf("kernelRadius: %d", radius);
+    printf("\n");
   }
 
   for (int layer = 0; layer < imageLayers; layer++) {
