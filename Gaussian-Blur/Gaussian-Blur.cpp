@@ -144,10 +144,13 @@ unsigned char* openImg(const char* fileName, img* img) {
 		exit(1);
 	}
 
+	auto arrayWidth = img->width * img->height * 3;
+
+
 	// Read only the image-data in an array
-	auto data = new unsigned char[img->arraywidth];
+	auto data = new unsigned char[arrayWidth];
 	fseek(file, img->data, SEEK_SET);
-	fread(data, img->arraywidth, 1, file);
+	fread(data, arrayWidth, 1, file);
 	fclose(file);
 
 	return data;
@@ -156,10 +159,12 @@ unsigned char* openImg(const char* fileName, img* img) {
 void writeImage(unsigned char* imageData, img* outputImage, const char* fileName) {
 	FILE* file;
 
+	auto arrayWidth = outputImage->width * outputImage->height * 3;
+
 	file = fopen(fileName, "wb");
 	fwrite(outputImage, IMAGE_SIZE, 1, file);
 	fseek(file, outputImage->data, SEEK_SET);
-	fwrite(imageData, outputImage->arraywidth, 1, file);
+	fwrite(imageData, arrayWidth, 1, file);
 	fclose(file);
 }
 
@@ -204,12 +209,12 @@ int main() {
 
 	// Generate kernel
 	float sigma = 10.0f;
-	int32_t radius = 9;
+	int32_t radius = 3;
 	int32_t diameter = radius * 2 + 1;
 	float* gaussKernel = generateKernel(radius, sigma);
 	int32_t imageLayers = 3;
 
-	string imageName = "images/xl.bmp";
+	string imageName = "images/mario.bmp";
 	const char* cImageName = imageName.c_str();
 	img* bmp = new img[IMAGE_SIZE];
 	unsigned char* imgData = openImg(cImageName, bmp);
@@ -220,6 +225,7 @@ int main() {
 
 	int32_t imageSize = imageWidth * imageHeight;
 	printf("The image has %u pixels\n", imageSize);
+	int32_t arrayWidth = imageSize * imageLayers;
 
 	cl_int status;
 
@@ -349,7 +355,7 @@ int main() {
 	checkStatus(clEnqueueNDRangeKernel(commandQueue, kernel, neededWorkItemDimensions, NULL, globalWorkSize, NULL, 0, NULL, NULL));
 
 	// read the device output buffer to the host output array
-	unsigned char* outputImage = new unsigned char[bmp->arraywidth];
+	unsigned char* outputImage = new unsigned char[arrayWidth];
 	checkStatus(clEnqueueReadBuffer(commandQueue, imageOutputBuffer, CL_TRUE, 0, imageSizeSize, outputImage, 0, NULL, NULL));
 	
 	// Write image to file-system
@@ -375,7 +381,6 @@ int main() {
 	checkStatus(clReleaseMemObject(imageOutputBuffer));
 	checkStatus(clReleaseCommandQueue(commandQueue));
 	checkStatus(clReleaseContext(context));
-
 
 	exit(EXIT_SUCCESS);
 }
